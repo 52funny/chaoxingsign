@@ -48,6 +48,9 @@ var PICPATH string
 // 模式
 var MODEL bool
 
+// Server酱的sckey
+var SCKEY string
+
 //初始化读入配置信息
 var configpath = flag.String("c", "./config.json", "默认配置文件的地址")
 
@@ -74,9 +77,11 @@ func init() {
 
 	USERNAME, PASSWORD = gjson.GetBytes(bytes, "username").String(), gjson.GetBytes(bytes, "password").String()
 	LOGFILE = gjson.GetBytes(bytes, "logfile").String()
-
+	SCKEY = gjson.GetBytes(bytes, "SCKEY").String()
 	MODEL = gjson.GetBytes(bytes, "model").Bool()
+
 	fmt.Println(MODEL)
+
 	if MODEL {
 		NAME = gjson.GetBytes(bytes, "advance.name").String()
 		ADDRESS = gjson.GetBytes(bytes, "advance.address").String()
@@ -115,6 +120,7 @@ func doSign(username, password string) {
 	handErr(err)
 	defer res.Body.Close()
 	bytes, err := ioutil.ReadAll(res.Body)
+
 	handErr(err)
 
 	if gjson.GetBytes(bytes, "result").String() != "1" {
@@ -123,7 +129,9 @@ func doSign(username, password string) {
 	}
 
 	ChannelList := gjson.GetBytes(bytes, "channelList").Array()
-	ioutil.WriteFile("kk.json", []byte(ChannelList[0].String()), 0666)
+
+
+
 	for _, item := range ChannelList {
 		//fmt.Println(item)
 		// 是否越界
@@ -292,7 +300,7 @@ func dealactivity(flags *bool, UID string, courses course.CourseData, cookies []
 						item.Get("nameTwo").String(),
 						item.Get("nameFour").String(),
 						aid)
-					sign(flags, UID, aid, cookies)
+					sign(flags, courses.Name, UID, aid, cookies)
 				}
 			}
 		}
@@ -300,7 +308,7 @@ func dealactivity(flags *bool, UID string, courses course.CourseData, cookies []
 }
 
 //签到函数
-func sign(flag *bool, uid, aid string, cookies []*http.Cookie) {
+func sign(flag *bool, coursename, uid, aid string, cookies []*http.Cookie) {
 	var res *http.Response
 	var err error
 
@@ -332,6 +340,7 @@ func sign(flag *bool, uid, aid string, cookies []*http.Cookie) {
 	resbyte, err := ioutil.ReadAll(res.Body)
 	handErr(err)
 	if string(resbyte) == "success" {
+		send_sc("签到信息", fmt.Sprintf("```\n课程信息: %v\n签到时间: %v\n签到状态: sucess", coursename, time.Now().Format("2006-01-02 15:04:05")))
 		fmt.Println("用户:", uid, "签到成功!")
 		*flag = true
 	} else {
@@ -351,6 +360,17 @@ func login(username, password string) []*http.Cookie {
 	}
 	defer res.Body.Close()
 	return res.Cookies()
+}
+
+//Server酱发送信息
+func send_sc(title, text string) {
+	if SCKEY == "" {
+		return
+	}
+	_, _ = HandRequest("POST", "https://sc.ftqq.com/SCU90790T7fa141be79783b5fb6fb54876ae763f25e786b4ed019d.send", map[string]string{
+		"text": title,
+		"desp": text,
+	}, nil)
 }
 
 //网络请求

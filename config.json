@@ -1,5 +1,5 @@
 {
-  "username": "账户",
+  "username": "账号",
   "password": "密码",
   "time": 10,
   "blockclasslist": [
@@ -10,6 +10,7 @@
   "start": "08:00:00",
   "end": "18:00:00",
   "logfile": "./log.log",
+  "SCKEY": "",
   "model": true,
   "advance": {
     "name": "大闹天宫",
