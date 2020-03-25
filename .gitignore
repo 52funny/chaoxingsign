@@ -1,3 +1,9 @@
 /chaoxinglinux
 /chaoxingwin
 /.idea
+.DS_Store
+*.json
+*.zip
+
+
+!config.json
