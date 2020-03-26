@@ -130,8 +130,6 @@ func doSign(username, password string) {
 
 	ChannelList := gjson.GetBytes(bytes, "channelList").Array()
 
-
-
 	for _, item := range ChannelList {
 		//fmt.Println(item)
 		// 是否越界
@@ -367,7 +365,7 @@ func send_sc(title, text string) {
 	if SCKEY == "" {
 		return
 	}
-	_, _ = HandRequest("POST", "https://sc.ftqq.com/SCU90790T7fa141be79783b5fb6fb54876ae763f25e786b4ed019d.send", map[string]string{
+	_, _ = HandRequest("POST", "https://sc.ftqq.com/"+SCKEY+".send", map[string]string{
 		"text": title,
 		"desp": text,
 	}, nil)
