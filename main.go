@@ -146,6 +146,7 @@ func doSign(username, password string) {
 			ClassId:  int(item.Get("content.id").Int()),
 		})
 		All++
+		
 
 	}
 	fmt.Printf("获取成功！！！ \n共%v课程\n", All)
@@ -207,7 +208,7 @@ func getuid(cookies []*http.Cookie) string {
 // 上传图片
 // references https://studygolang.com/articles/11558
 func uploadimage(params map[string]string, cookies []*http.Cookie) string {
-	file, err := os.Open("./icon.png")
+	file, err := os.Open(PICPATH)
 	handErr(err)
 	defer file.Close()
 	body := &bytes.Buffer{}
@@ -413,6 +414,7 @@ func handErr(err error) {
 		defer file.Close()
 		log.SetOutput(file)
 		log.Println(err)
+		send_sc("Error", err.Error())
 		os.Exit(1)
 	}
 }
